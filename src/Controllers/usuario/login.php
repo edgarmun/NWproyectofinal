@@ -8,7 +8,6 @@ class login extends PublicController {
 
     public function run(): void {
 
-        // 👇 ESTO SIEMPRE VA (para que NO salga blanco)
         $this->viewName = "usuario/login";
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
