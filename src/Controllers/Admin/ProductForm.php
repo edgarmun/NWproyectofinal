@@ -16,37 +16,37 @@ class ProductForm extends PublicController {
         if ($this->isPostBack()) {
             // 1. CAPTURA DE DATOS
             $nombre = $_POST["nombre"];
-            $descripcion = $_POST["descripcion"]; // <--- CAPTURAMOS LA NUEVA DESCRIPCIÓN
+            $descripcion = $_POST["descripcion"];
             $precio = (float)$_POST["precio"];
             $stock  = (int)$_POST["stock"];
-            $imagen = "default.jpg";
             $id_categoria = (int)$_POST["id_categoria"];
+            $estado = "disponible";
+            $imagen = "default.jpg";
 
             // 2. VALIDACIÓN DE STOCK
-            if ($stock < 1) {
-                $viewData["error"] = "El stock debe ser mayor a 0.";
+            if ($stock < 0) {
+                $viewData["error"] = "El stock no puede ser negativo.";
             } else {
-                // Manejo de la imagen
+                // Manejo de la subida de imagen
                 if (isset($_FILES["imagen_file"]) && $_FILES["imagen_file"]["name"] !== "") {
                     $nom_archivo = time() . "_" . $_FILES["imagen_file"]["name"];
+                    // Asegúrate de que esta carpeta exista en tu servidor
                     if (move_uploaded_file($_FILES["imagen_file"]["tmp_name"], "public/img/productos/" . $nom_archivo)) {
                         $imagen = $nom_archivo;
                     }
                 }
 
-                // 3. INSERCIÓN EN LA BASE DE DATOS
-                // Reemplazamos "Arreglo Floral" por la variable $descripcion
+                // 3. INSERCIÓN (Ordenado: nombre, dsc, precio, img, estado, stock, cat)
                 ProductsModel::insertProduct(
                     $nombre, 
                     $descripcion, 
                     $precio, 
                     $imagen, 
-                    "disponible", 
+                    $estado, 
                     $stock, 
                     $id_categoria
                 );
                 
-                // Redirección al listado
                 Site::redirectTo("index.php?page=Admin_Productos");
                 return;
             }
